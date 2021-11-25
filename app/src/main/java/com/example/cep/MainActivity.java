@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     Thread t;
     EditText txtCep;
     TextView tvCep;
+    String textCep = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,44 +40,17 @@ public class MainActivity extends AppCompatActivity {
         txtCep = findViewById(R.id.txtCep);
         tvCep = findViewById(R.id.tvCep);
 
-        SimpleMaskFormatter smfd = new SimpleMaskFormatter("NNNNN-NNN");
+        SimpleMaskFormatter smf = new SimpleMaskFormatter("NNNNN-NNN");
 
-        MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smfd);
+        MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
         txtCep.addTextChangedListener(mtw1);
 
-        Button btnSeach = findViewById(R.id.btnCep);
-        btnSeach.setOnClickListener(v -> {
-
-            String API = "https://viacep.com.br/ws/" + txtCep.getText().toString() + "/json/";
+        Button btnSearch = findViewById(R.id.btnCep);
+        btnSearch.setOnClickListener(v -> {
 
             t = new Thread(() -> {
-                try {
-                    url = new URL(API);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.connect();
-                    statusCode = connection.getResponseCode();
-                    InputStream is;
-                    if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST){
-                        is = connection.getInputStream();
-                    }else{
-                        is = connection.getErrorStream();
-                    }
-
-                    response = convertInputStreamToString(is);
-                    is.close();
-                    connection.disconnect();
-                } catch (MalformedURLException | ProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-                    cep = new Gson().fromJson(response, Cep.class);
-                }
-
-                cep.setStatus(statusCode);
+                textCep = txtCep.getText().toString();
+                cep = searchCep(textCep);
             });
             t.start();
             try {
@@ -85,16 +59,57 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Log.d("TAG", "CEP: " + cep);
+            Log.d("TAG", "btn cep: " + cep.toString());
 
-            runOnUiThread(() -> {
-                tvCep.setText(cep.toString());
-            });
+            tvCep.setText("cep.toString()");
 
         });
+    }
 
 
+    private Cep searchCep(String c) {
 
+        String API = "https://viacep.com.br/ws/" + c + "/json/";
+
+        t = new Thread(() -> {
+            try {
+                url = new URL(API);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                statusCode = connection.getResponseCode();
+                InputStream is;
+                if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST){
+                    is = connection.getInputStream();
+                }else{
+                    is = connection.getErrorStream();
+                }
+
+                response = convertInputStreamToString(is);
+                is.close();
+                connection.disconnect();
+            } catch (MalformedURLException | ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+                cep = new Gson().fromJson(response, Cep.class);
+            }
+
+            cep.setStatus(statusCode);
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("TAG", "CEP: " + cep);
+
+        return  cep;
     }
 
     private static String convertInputStreamToString(InputStream is){
