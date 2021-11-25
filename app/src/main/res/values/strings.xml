@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">CEP</string>
     <string name="search">Buscar</string>
+    <string name="public_place">Logradouro:</string>
+    <string name="neighborhood">Bairro:</string>
+    <string name="city">Cidade:</string>
+    <string name="uf">UF:</string>
+    <string name="ddd">DDD:</string>
 </resources>

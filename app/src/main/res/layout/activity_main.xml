@@ -22,23 +22,25 @@
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="phone"
         app:layout_constraintEnd_toStartOf="@+id/btnAddress"
         app:layout_constraintHorizontal_bias="0.465"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="19dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
         android:text="@string/search"
+        app:layout_constraintBottom_toBottomOf="@+id/txtCep"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/txtCep" />
 
     <EditText
         android:id="@+id/txtState"
@@ -84,5 +86,120 @@
         app:layout_constraintBottom_toTopOf="@+id/txtState"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/lblStreet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/public_place"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toTopOf="@+id/lblNeighborhood"
+        app:layout_constraintEnd_toStartOf="@+id/tvStreet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCep" />
+
+    <TextView
+        android:id="@+id/tvStreet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/lblStreet"
+        app:layout_constraintEnd_toStartOf="@+id/lblState"
+        app:layout_constraintStart_toEndOf="@+id/lblStreet"
+        app:layout_constraintTop_toTopOf="@+id/lblStreet" />
+
+    <TextView
+        android:id="@+id/lblState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/uf"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="@+id/tvStreet"
+        app:layout_constraintEnd_toStartOf="@+id/tvState"
+        app:layout_constraintStart_toEndOf="@+id/tvStreet"
+        app:layout_constraintTop_toTopOf="@+id/tvStreet" />
+
+    <TextView
+        android:id="@+id/tvState"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/lblState"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lblState"
+        app:layout_constraintTop_toTopOf="@+id/lblState" />
+
+    <TextView
+        android:id="@+id/lblNeighborhood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/neighborhood"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toTopOf="@+id/lblCity"
+        app:layout_constraintEnd_toStartOf="@+id/tvNeighborhood"
+        app:layout_constraintStart_toStartOf="@+id/lblStreet"
+        app:layout_constraintTop_toBottomOf="@+id/lblStreet" />
+
+    <TextView
+        android:id="@+id/tvNeighborhood"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/lblNeighborhood"
+        app:layout_constraintEnd_toStartOf="@+id/lblDdd"
+        app:layout_constraintStart_toEndOf="@+id/lblNeighborhood"
+        app:layout_constraintTop_toTopOf="@+id/lblNeighborhood" />
+
+    <TextView
+        android:id="@+id/lblDdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ddd"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="@+id/tvNeighborhood"
+        app:layout_constraintEnd_toStartOf="@+id/tvDdd"
+        app:layout_constraintStart_toEndOf="@+id/tvNeighborhood"
+        app:layout_constraintTop_toTopOf="@+id/tvNeighborhood" />
+
+    <TextView
+        android:id="@+id/tvDdd"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/lblDdd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lblDdd"
+        app:layout_constraintTop_toTopOf="@+id/lblDdd" />
+
+    <TextView
+        android:id="@+id/lblCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/city"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintEnd_toStartOf="@+id/tvCity"
+        app:layout_constraintStart_toStartOf="@+id/lblNeighborhood"
+        app:layout_constraintTop_toBottomOf="@+id/lblNeighborhood" />
+
+    <TextView
+        android:id="@+id/tvCity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/lblCity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lblCity"
+        app:layout_constraintTop_toTopOf="@+id/lblCity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

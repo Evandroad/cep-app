@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,12 +33,10 @@ public class MainActivity extends AppCompatActivity {
     String response = null;
     Address address = new Address();
     Thread t;
-    EditText txtCep;
-    EditText txtState;
-    EditText txtCity;
-    EditText txtStreet;
-    TextView tvCep;
-    String res;
+    EditText txtCep, txtState, txtCity, txtStreet;
+    TextView tvCep, tvStreet, tvState, tvNeighborhood, tvDdd, tvCity;
+    TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
+    JsonArray jArray;
     String textCep = "", textState = "", textCity = "", textStreet = "";
 
     @Override
@@ -46,6 +49,18 @@ public class MainActivity extends AppCompatActivity {
         txtCity = findViewById(R.id.txtCity);
         txtStreet = findViewById(R.id.txtStreet);
         tvCep = findViewById(R.id.tvCep);
+        tvStreet = findViewById(R.id.tvStreet);
+        tvState = findViewById(R.id.tvState);
+        tvNeighborhood = findViewById(R.id.tvNeighborhood);
+        tvDdd = findViewById(R.id.tvDdd);
+        tvCity = findViewById(R.id.tvCity);
+        lblStreet = findViewById(R.id.lblStreet);
+        lblState = findViewById(R.id.lblState);
+        lblNeighborhood = findViewById(R.id.lblNeighborhood);
+        lblDdd = findViewById(R.id.lblDdd);
+        lblCity = findViewById(R.id.lblCity);
+
+        hide();
 
         SimpleMaskFormatter smf = new SimpleMaskFormatter("NNNNN-NNN");
 
@@ -69,7 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("TAG", "btn address: " + address.toString());
 
-            tvCep.setText(address.toString());
+            tvStreet.setText(address.getLogradouro());
+            tvState.setText(address.getUf());
+            tvNeighborhood.setText(address.getBairro());
+            tvDdd.setText(address.getDdd());
+            tvCity.setText(address.getLocalidade());
+
+            show();
 
         });
 
@@ -80,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             textStreet = txtStreet.getText().toString();
 
             t = new Thread(() -> {
-                res = searchCep(textState, textCity, textStreet);
+                jArray = searchCep(textState, textCity, textStreet);
             });
             t.start();
             try {
@@ -89,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Log.d("TAG", "btn address: " + res);
+            Log.d("TAG", "btn address: " + jArray.get(0).getAsJsonObject().toString());
 
-            tvCep.setText(res);
+            tvCep.setText(jArray.get(0).getAsJsonObject().toString());
         });
     }
 
@@ -130,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("TAG", "CEP: " + address);
-
         if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
             address = new Gson().fromJson(response, Address.class);
         }
@@ -141,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         return address;
     }
 
-    private String searchCep(String state, String city, String street) {
+    private JsonArray searchCep(String state, String city, String street) {
 
         String API = "https://viacep.com.br/ws/" + state + "/" + city + "/" + street + "/json/";
 
@@ -175,15 +194,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("TAG", "CEP: " + response);
+        if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            jArray = new JsonParser().parse(response).getAsJsonArray();
+        }
 
-        /*if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-            address = new Gson().fromJson(response, Address.class);
-        }*/
-
-        //address.setStatus(statusCode);
-
-        return response;
+        return jArray;
     }
 
     private static String convertInputStreamToString(InputStream is){
@@ -200,5 +215,31 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return buffer.toString();
+    }
+
+    private void hide() {
+        tvStreet.setVisibility(View.GONE);
+        tvState.setVisibility(View.GONE);
+        tvNeighborhood.setVisibility(View.GONE);
+        tvDdd.setVisibility(View.GONE);
+        tvCity.setVisibility(View.GONE);
+        lblStreet.setVisibility(View.GONE);
+        lblState.setVisibility(View.GONE);
+        lblNeighborhood.setVisibility(View.GONE);
+        lblDdd.setVisibility(View.GONE);
+        lblCity.setVisibility(View.GONE);
+    }
+
+    private void show() {
+        tvStreet.setVisibility(View.VISIBLE);
+        tvState.setVisibility(View.VISIBLE);
+        tvNeighborhood.setVisibility(View.VISIBLE);
+        tvDdd.setVisibility(View.VISIBLE);
+        tvCity.setVisibility(View.VISIBLE);
+        lblStreet.setVisibility(View.VISIBLE);
+        lblState.setVisibility(View.VISIBLE);
+        lblNeighborhood.setVisibility(View.VISIBLE);
+        lblDdd.setVisibility(View.VISIBLE);
+        lblCity.setVisibility(View.VISIBLE);
     }
 }
