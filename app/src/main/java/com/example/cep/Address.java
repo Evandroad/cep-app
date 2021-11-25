@@ -1,6 +1,6 @@
 package com.example.cep;
 
-public class Cep {
+public class Address {
 
     private int status;
     private String cep;
@@ -104,9 +104,9 @@ public class Cep {
 
     @Override
     public String toString() {
-        return "Cep{" +
+        return "Address{" +
                 "status=" + status +
-                ", cep='" + cep + '\'' +
+                ", address='" + cep + '\'' +
                 ", logradouro='" + logradouro + '\'' +
                 ", complemento='" + complemento + '\'' +
                 ", bairro='" + bairro + '\'' +
