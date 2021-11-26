@@ -6,4 +6,6 @@
     <string name="city">Cidade:</string>
     <string name="uf">UF:</string>
     <string name="ddd">DDD:</string>
+    <string name="state">Estado:</string>
+    <string name="street">Rua:</string>
 </resources>

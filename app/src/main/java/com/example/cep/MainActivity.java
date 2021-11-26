@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         txtState = findViewById(R.id.txtState);
         txtCity = findViewById(R.id.txtCity);
         txtStreet = findViewById(R.id.txtStreet);
-        tvCep = findViewById(R.id.tvCep);
         tvStreet = findViewById(R.id.tvStreet);
         tvState = findViewById(R.id.tvState);
         tvNeighborhood = findViewById(R.id.tvNeighborhood);
@@ -112,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("TAG", "btn address: " + jArray.get(0).getAsJsonObject().toString());
 
-            tvCep.setText(jArray.get(0).getAsJsonObject().toString());
+            //tvCep.setText(jArray.get(0).getAsJsonObject().toString());
         });
     }
 
