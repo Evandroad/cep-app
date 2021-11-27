@@ -104,18 +104,12 @@ public class Address {
 
     @Override
     public String toString() {
-        return "Address{" +
-                "status=" + status +
-                ", address='" + cep + '\'' +
-                ", logradouro='" + logradouro + '\'' +
-                ", complemento='" + complemento + '\'' +
-                ", bairro='" + bairro + '\'' +
-                ", localidade='" + localidade + '\'' +
-                ", uf='" + uf + '\'' +
-                ", ibge='" + ibge + '\'' +
-                ", gia='" + gia + '\'' +
-                ", ddd='" + ddd + '\'' +
-                ", siafi='" + siafi + '\'' +
-                '}';
+        return "CEP: " + cep +
+               ", logradouro: " + logradouro +
+               ", complemento: " + complemento +
+               ", bairro: " + bairro +
+               ", localidade: " + localidade +
+               ", uf: " + uf +
+               ", ddd: " + ddd;
     }
 }

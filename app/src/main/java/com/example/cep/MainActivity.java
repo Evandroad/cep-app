@@ -3,16 +3,21 @@ package com.example.cep;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -33,11 +38,13 @@ public class MainActivity extends AppCompatActivity {
     String response = null;
     Address address = new Address();
     Thread t;
+    ListView listView;
     EditText txtCep, txtState, txtCity, txtStreet;
-    TextView tvCep, tvStreet, tvState, tvNeighborhood, tvDdd, tvCity;
+    TextView tvStreet, tvState, tvNeighborhood, tvDdd, tvCity, tvBackground2;
     TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
     JsonArray jArray;
     String textCep = "", textState = "", textCity = "", textStreet = "";
+    List<Address> listAddress = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
         lblNeighborhood = findViewById(R.id.lblNeighborhood);
         lblDdd = findViewById(R.id.lblDdd);
         lblCity = findViewById(R.id.lblCity);
+        tvBackground2 = findViewById(R.id.tvBackground2);
+        listView = findViewById(R.id.listView);
+        Button btnAddress = findViewById(R.id.btnAddress);
+        Button btnCep = findViewById(R.id.btnCep);
+
+        txtCep.requestFocus();
 
         hide();
 
@@ -66,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
         txtCep.addTextChangedListener(mtw1);
 
-        Button btnAddress = findViewById(R.id.btnAddress);
         btnAddress.setOnClickListener(v -> {
 
             textCep = txtCep.getText().toString();
@@ -93,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        Button btnCep = findViewById(R.id.btnCep);
         btnCep.setOnClickListener(v -> {
             textState = txtState.getText().toString();
             textCity = txtCity.getText().toString();
@@ -109,9 +120,14 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Log.d("TAG", "btn address: " + jArray.get(0).getAsJsonObject().toString());
+            for(int i = 0; i < jArray.size() - 1; i++) {
+                address = new Gson().fromJson(jArray.get(i).toString(), Address.class);
+                listAddress.add(address);
+            }
 
-            //tvCep.setText(jArray.get(0).getAsJsonObject().toString());
+            listView.invalidateViews();
+            ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
+            listView.setAdapter(adapter);
         });
     }
 
@@ -227,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
         lblNeighborhood.setVisibility(View.GONE);
         lblDdd.setVisibility(View.GONE);
         lblCity.setVisibility(View.GONE);
+        tvBackground2.setVisibility(View.GONE);
     }
 
     private void show() {
@@ -240,5 +257,6 @@ public class MainActivity extends AppCompatActivity {
         lblNeighborhood.setVisibility(View.VISIBLE);
         lblDdd.setVisibility(View.VISIBLE);
         lblCity.setVisibility(View.VISIBLE);
+        tvBackground2.setVisibility(View.VISIBLE);
     }
 }
