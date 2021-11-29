@@ -38,10 +38,12 @@ public class AddressAdapter extends BaseAdapter {
 
         View v = activity.getLayoutInflater().inflate(R.layout.item, viewGroup, false);
         TextView tvItemStreet = v.findViewById(R.id.tvItemStreet);
+        TextView tvItemState = v.findViewById(R.id.tvItemState);
 
         Address a = addresses.get(i);
 
         tvItemStreet.setText(a.getLogradouro());
+        tvItemState.setText(a.getUf());
 
         return v;
     }
