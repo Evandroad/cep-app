@@ -126,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             listView.invalidateViews();
-            ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
+            //ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
+            AddressAdapter adapter = new AddressAdapter(this, listAddress);
             listView.setAdapter(adapter);
         });
     }
