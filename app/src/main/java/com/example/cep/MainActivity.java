@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -126,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
             //ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
             AddressAdapter adapter = new AddressAdapter(this, listAddress);
             listView.setAdapter(adapter);
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(this.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
         });
 
         btnClear1.setOnClickListener(v -> {
