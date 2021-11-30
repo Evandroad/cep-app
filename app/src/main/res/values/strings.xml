@@ -9,4 +9,6 @@
     <string name="state">Estado:</string>
     <string name="state_short">Estado (Sigla):</string>
     <string name="street">Rua:</string>
+    <string name="clear">Limpar</string>
+    <string name="cep">CEP:</string>
 </resources>

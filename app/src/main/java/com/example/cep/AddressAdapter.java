@@ -39,11 +39,17 @@ public class AddressAdapter extends BaseAdapter {
         View v = activity.getLayoutInflater().inflate(R.layout.item, viewGroup, false);
         TextView tvItemStreet = v.findViewById(R.id.tvItemStreet);
         TextView tvItemState = v.findViewById(R.id.tvItemState);
+        TextView tvItemNeighborhood = v.findViewById(R.id.tvItemNeighborhood);
+        TextView tvItemCity = v.findViewById(R.id.tvItemCity);
+        TextView tvItemCep = v.findViewById(R.id.tvItemCep);
 
         Address a = addresses.get(i);
 
         tvItemStreet.setText(a.getLogradouro());
         tvItemState.setText(a.getUf());
+        tvItemNeighborhood.setText(a.getBairro());
+        tvItemCity.setText(a.getLocalidade());
+        tvItemCep.setText(a.getCep());
 
         return v;
     }

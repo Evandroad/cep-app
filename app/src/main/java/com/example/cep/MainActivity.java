@@ -3,11 +3,8 @@ package com.example.cep;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -17,7 +14,6 @@ import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -42,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     EditText txtCep, txtState, txtCity, txtStreet;
     TextView tvStreet, tvState, tvNeighborhood, tvDdd, tvCity, tvBackground2;
     TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
+    Button btnClear1, btnClear2;
     JsonArray jArray;
     String textCep = "", textState = "", textCity = "", textStreet = "";
     List<Address> listAddress = new ArrayList<>();
@@ -69,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         Button btnAddress = findViewById(R.id.btnAddress);
         Button btnCep = findViewById(R.id.btnCep);
+        btnClear1 = findViewById(R.id.btnClear1);
+        btnClear2 = findViewById(R.id.btnClear2);
 
         txtCep.requestFocus();
 
@@ -92,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            Log.d("TAG", "btn address: " + address.toString());
 
             tvStreet.setText(address.getLogradouro());
             tvState.setText(address.getUf());
@@ -129,6 +126,25 @@ public class MainActivity extends AppCompatActivity {
             //ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
             AddressAdapter adapter = new AddressAdapter(this, listAddress);
             listView.setAdapter(adapter);
+        });
+
+        btnClear1.setOnClickListener(v -> {
+            txtCep.setText("");
+            tvStreet.setText("");
+            tvState.setText("");
+            tvNeighborhood.setText("");
+            tvDdd.setText("");
+            tvCity.setText("");
+            hide();
+        });
+
+        btnClear2.setOnClickListener(v -> {
+            txtState.setText("");
+            txtCity.setText("");
+            txtStreet.setText("");
+            listView.setAdapter(null);
+            listView.invalidateViews();
+            txtState.requestFocus();
         });
     }
 
@@ -245,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
         lblDdd.setVisibility(View.GONE);
         lblCity.setVisibility(View.GONE);
         tvBackground2.setVisibility(View.GONE);
+        btnClear1.setVisibility(View.GONE);
     }
 
     private void show() {
@@ -259,5 +276,6 @@ public class MainActivity extends AppCompatActivity {
         lblDdd.setVisibility(View.VISIBLE);
         lblCity.setVisibility(View.VISIBLE);
         tvBackground2.setVisibility(View.VISIBLE);
+        btnClear1.setVisibility(View.VISIBLE);
     }
 }

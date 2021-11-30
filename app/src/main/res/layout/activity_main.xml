@@ -22,7 +22,7 @@
     <TextView
         android:id="@+id/tvBackground2"
         android:layout_width="0dp"
-        android:layout_height="120dp"
+        android:layout_height="110dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -120,12 +120,12 @@
         android:id="@+id/btnCep"
         android:layout_width="120dp"
         android:layout_height="50dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/search"
         app:cornerRadius="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnClear2"
+        app:layout_constraintStart_toStartOf="@+id/tvBackground3"
         app:layout_constraintTop_toBottomOf="@+id/txtStreet" />
 
     <TextView
@@ -133,9 +133,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/public_place"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toTopOf="@+id/lblNeighborhood"
@@ -179,8 +177,6 @@
         android:id="@+id/lblNeighborhood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/neighborhood"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toTopOf="@+id/lblCity"
@@ -225,9 +221,7 @@
         android:id="@+id/lblCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/city"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toBottomOf="@+id/tvBackground2"
@@ -241,7 +235,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/lblCity"
-        app:layout_constraintEnd_toEndOf="@+id/tvBackground1"
+        app:layout_constraintEnd_toStartOf="@+id/btnClear1"
         app:layout_constraintStart_toEndOf="@+id/lblCity"
         app:layout_constraintTop_toTopOf="@+id/lblCity" />
 
@@ -294,5 +288,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvBackground3" />
+
+    <Button
+        android:id="@+id/btnClear1"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/clear"
+        app:cornerRadius="25dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCity"
+        app:layout_constraintEnd_toEndOf="@+id/tvBackground2"
+        app:layout_constraintTop_toTopOf="@+id/tvCity" />
+
+    <Button
+        android:id="@+id/btnClear2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/clear"
+        app:cornerRadius="25dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnCep"
+        app:layout_constraintEnd_toEndOf="@+id/tvBackground3"
+        app:layout_constraintTop_toTopOf="@+id/btnCep"
+        app:layout_constraintStart_toEndOf="@+id/btnCep"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

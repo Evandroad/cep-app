@@ -10,19 +10,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/street"
+        android:text="@string/public_place"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toStartOf="@+id/tvItemStreet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvItemStreet"
-        android:layout_width="240dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
 
@@ -30,21 +31,84 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/neighborhood"
+        app:layout_constraintBottom_toTopOf="@+id/textView8"
+        app:layout_constraintEnd_toStartOf="@+id/tvItemNeighborhood"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/tvItemNeighborhood"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/TextView3"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/TextView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/uf"
-        app:layout_constraintBottom_toBottomOf="@+id/tvItemStreet"
+        app:layout_constraintBottom_toBottomOf="@+id/tvItemNeighborhood"
         app:layout_constraintEnd_toStartOf="@+id/tvItemState"
-        app:layout_constraintStart_toEndOf="@+id/tvItemStreet"
-        app:layout_constraintTop_toTopOf="@+id/tvItemStreet" />
+        app:layout_constraintStart_toEndOf="@+id/tvItemNeighborhood"
+        app:layout_constraintTop_toTopOf="@+id/tvItemNeighborhood" />
 
     <TextView
         android:id="@+id/tvItemState"
-        android:layout_width="50dp"
+        android:layout_width="30dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintBottom_toBottomOf="@+id/TextView3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2" />
+        app:layout_constraintStart_toEndOf="@+id/TextView3"
+        app:layout_constraintTop_toTopOf="@+id/TextView3" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/city"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvItemCity"
+        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/tvItemCity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintEnd_toStartOf="@+id/textView9"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/cep"
+        app:layout_constraintBottom_toBottomOf="@+id/tvItemCity"
+        app:layout_constraintEnd_toStartOf="@+id/tvItemCep"
+        app:layout_constraintStart_toEndOf="@+id/tvItemCity"
+        app:layout_constraintTop_toTopOf="@+id/tvItemCity"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvItemCep"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintTop_toTopOf="@+id/textView9" />
 </androidx.constraintlayout.widget.ConstraintLayout>
