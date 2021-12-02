@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnClear1, btnClear2;
     JsonArray jArray;
     String textCep = "", textState = "", textCity = "", textStreet = "";
-    List<Address> listAddress = new ArrayList<>();
+    List<Address> listAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             textState = txtState.getText().toString();
             textCity = txtCity.getText().toString();
             textStreet = txtStreet.getText().toString();
+            listAddress = new ArrayList<>();
 
             t = new Thread(() -> {
                 jArray = searchCep(textState, textCity, textStreet);
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 listAddress.add(address);
             }
 
+            listView.setAdapter(null);
             listView.invalidateViews();
             //ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
             AddressAdapter adapter = new AddressAdapter(this, listAddress);
