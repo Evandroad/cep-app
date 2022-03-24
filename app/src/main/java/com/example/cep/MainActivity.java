@@ -9,37 +9,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    URL url;
-    int statusCode = 600;
-    String response = null;
-    Address address = new Address();
-    Thread t;
+    private final int statusCode = 500;
+    private final String METHOD = "GET";
+
     ListView listView;
     EditText txtCep, txtState, txtCity, txtStreet;
     TextView tvStreet, tvState, tvNeighborhood, tvDdd, tvCity, tvBackground2;
     TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
-    Button btnClear1, btnClear2;
-    JsonArray jArray;
+    Button btnClear1, btnClear2, btnAddress, btnCep;
     String textCep = "", textState = "", textCity = "", textStreet = "";
     List<Address> listAddress;
 
@@ -48,6 +41,69 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initComponents();
+        txtCep.requestFocus();
+        setVisibility(false);
+
+        SimpleMaskFormatter smf = new SimpleMaskFormatter("NNNNN-NNN");
+        MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
+        txtCep.addTextChangedListener(mtw1);
+
+        btnAddress.setOnClickListener(v -> {
+            textCep = txtCep.getText().toString();
+
+            Address address = searchAddress(textCep);
+
+            tvStreet.setText(address.getLogradouro());
+            tvState.setText(address.getUf());
+            tvNeighborhood.setText(address.getBairro());
+            tvDdd.setText(address.getDdd());
+            tvCity.setText(address.getLocalidade());
+
+            setVisibility(true);
+        });
+
+        btnCep.setOnClickListener(v -> {
+            textState = txtState.getText().toString();
+            textCity = txtCity.getText().toString();
+            textStreet = txtStreet.getText().toString();
+            listAddress = new ArrayList<>();
+
+            listAddress = searchCep(textState, textCity, textStreet);
+
+            if (listAddress.size() > 0) {
+                listView.setAdapter(null);
+                listView.invalidateViews();
+                AddressAdapter adapter = new AddressAdapter(this, listAddress);
+                listView.setAdapter(adapter);
+                InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
+            } else {
+                Toast.makeText(this, "Nenhum endereço encontrado.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnClear1.setOnClickListener(v -> {
+            txtCep.setText("");
+            tvStreet.setText("");
+            tvState.setText("");
+            tvNeighborhood.setText("");
+            tvDdd.setText("");
+            tvCity.setText("");
+            setVisibility(false);
+        });
+
+        btnClear2.setOnClickListener(v -> {
+            txtState.setText("");
+            txtCity.setText("");
+            txtStreet.setText("");
+            listView.setAdapter(null);
+            listView.invalidateViews();
+            txtState.requestFocus();
+        });
+    }
+
+    private void initComponents() {
         txtCep = findViewById(R.id.txtCep);
         txtState = findViewById(R.id.txtState);
         txtCity = findViewById(R.id.txtCity);
@@ -64,222 +120,52 @@ public class MainActivity extends AppCompatActivity {
         lblCity = findViewById(R.id.lblCity);
         tvBackground2 = findViewById(R.id.tvBackground2);
         listView = findViewById(R.id.listView);
-        Button btnAddress = findViewById(R.id.btnAddress);
-        Button btnCep = findViewById(R.id.btnCep);
+        btnAddress = findViewById(R.id.btnAddress);
+        btnCep = findViewById(R.id.btnCep);
         btnClear1 = findViewById(R.id.btnClear1);
         btnClear2 = findViewById(R.id.btnClear2);
-
-        txtCep.requestFocus();
-
-        hide();
-
-        SimpleMaskFormatter smf = new SimpleMaskFormatter("NNNNN-NNN");
-
-        MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
-        txtCep.addTextChangedListener(mtw1);
-
-        btnAddress.setOnClickListener(v -> {
-
-            textCep = txtCep.getText().toString();
-
-            t = new Thread(() -> {
-                address = searchAddress(textCep);
-            });
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            tvStreet.setText(address.getLogradouro());
-            tvState.setText(address.getUf());
-            tvNeighborhood.setText(address.getBairro());
-            tvDdd.setText(address.getDdd());
-            tvCity.setText(address.getLocalidade());
-
-            show();
-
-        });
-
-        btnCep.setOnClickListener(v -> {
-            textState = txtState.getText().toString();
-            textCity = txtCity.getText().toString();
-            textStreet = txtStreet.getText().toString();
-            listAddress = new ArrayList<>();
-
-            t = new Thread(() -> {
-                jArray = searchCep(textState, textCity, textStreet);
-            });
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            for(int i = 0; i < jArray.size() - 1; i++) {
-                address = new Gson().fromJson(jArray.get(i).toString(), Address.class);
-                listAddress.add(address);
-            }
-
-            listView.setAdapter(null);
-            listView.invalidateViews();
-            //ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_list_item_1, listAddress);
-            AddressAdapter adapter = new AddressAdapter(this, listAddress);
-            listView.setAdapter(adapter);
-            InputMethodManager imm = (InputMethodManager) this.getSystemService(this.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
-        });
-
-        btnClear1.setOnClickListener(v -> {
-            txtCep.setText("");
-            tvStreet.setText("");
-            tvState.setText("");
-            tvNeighborhood.setText("");
-            tvDdd.setText("");
-            tvCity.setText("");
-            hide();
-        });
-
-        btnClear2.setOnClickListener(v -> {
-            txtState.setText("");
-            txtCity.setText("");
-            txtStreet.setText("");
-            listView.setAdapter(null);
-            listView.invalidateViews();
-            txtState.requestFocus();
-        });
     }
 
+    private List<Address> searchCep(String state, String city, String street) {
+
+        String API = "https://viacep.com.br/ws/" + state + "/" + city + "/" + street + "/json/";
+
+        String response = HttpUtil.getConnect(METHOD, API);
+        List<Address> addressList = new ArrayList<>();
+        if(response != null) {
+            Address[] addresses = new Gson().fromJson(response, Address[].class);
+            addressList = Arrays.asList(addresses);
+        }
+
+        return addressList;
+    }
 
     private Address searchAddress(String c) {
 
         String API = "https://viacep.com.br/ws/" + c + "/json/";
 
-        t = new Thread(() -> {
-            try {
-                url = new URL(API);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-                statusCode = connection.getResponseCode();
-                InputStream is;
-                if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST){
-                    is = connection.getInputStream();
-                }else{
-                    is = connection.getErrorStream();
-                }
-
-                response = convertInputStreamToString(is);
-                is.close();
-                connection.disconnect();
-            } catch (MalformedURLException | ProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+        String response = HttpUtil.getConnect(METHOD, API);
+        Address address = new Address();
+        if (response != null)
             address = new Gson().fromJson(response, Address.class);
-        }
-
         address.setStatus(statusCode);
 
         return address;
     }
 
-    private JsonArray searchCep(String state, String city, String street) {
-
-        String API = "https://viacep.com.br/ws/" + state + "/" + city + "/" + street + "/json/";
-
-        t = new Thread(() -> {
-            try {
-                url = new URL(API);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-                statusCode = connection.getResponseCode();
-                InputStream is;
-                if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST){
-                    is = connection.getInputStream();
-                }else{
-                    is = connection.getErrorStream();
-                }
-
-                response = convertInputStreamToString(is);
-                is.close();
-                connection.disconnect();
-            } catch (MalformedURLException | ProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if(statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-            jArray = new JsonParser().parse(response).getAsJsonArray();
-        }
-
-        return jArray;
-    }
-
-    private static String convertInputStreamToString(InputStream is){
-        StringBuffer buffer = new StringBuffer();
-        BufferedReader br;
-        String line;
-        try{
-            br = new BufferedReader(new InputStreamReader(is));
-            while((line = br.readLine())!=null){
-                buffer.append(line);
-            }
-            br.close();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return buffer.toString();
-    }
-
-    private void hide() {
-        tvStreet.setVisibility(View.GONE);
-        tvState.setVisibility(View.GONE);
-        tvNeighborhood.setVisibility(View.GONE);
-        tvDdd.setVisibility(View.GONE);
-        tvCity.setVisibility(View.GONE);
-        lblStreet.setVisibility(View.GONE);
-        lblState.setVisibility(View.GONE);
-        lblNeighborhood.setVisibility(View.GONE);
-        lblDdd.setVisibility(View.GONE);
-        lblCity.setVisibility(View.GONE);
-        tvBackground2.setVisibility(View.GONE);
-        btnClear1.setVisibility(View.GONE);
-    }
-
-    private void show() {
-        tvStreet.setVisibility(View.VISIBLE);
-        tvState.setVisibility(View.VISIBLE);
-        tvNeighborhood.setVisibility(View.VISIBLE);
-        tvDdd.setVisibility(View.VISIBLE);
-        tvCity.setVisibility(View.VISIBLE);
-        lblStreet.setVisibility(View.VISIBLE);
-        lblState.setVisibility(View.VISIBLE);
-        lblNeighborhood.setVisibility(View.VISIBLE);
-        lblDdd.setVisibility(View.VISIBLE);
-        lblCity.setVisibility(View.VISIBLE);
-        tvBackground2.setVisibility(View.VISIBLE);
-        btnClear1.setVisibility(View.VISIBLE);
+    private void setVisibility(boolean visibility) {
+        tvStreet.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvStreet.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvState.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvNeighborhood.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvDdd.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvCity.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        lblStreet.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        lblState.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        lblNeighborhood.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        lblDdd.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        lblCity.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        tvBackground2.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        btnClear1.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 }
