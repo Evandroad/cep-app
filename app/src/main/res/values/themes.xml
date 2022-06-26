@@ -3,8 +3,8 @@
     <style name="Theme.CEP" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue_1</item>
-        <item name="colorPrimaryVariant">@color/gray_1</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/blue_0</item>
+        <item name="colorOnPrimary">@color/gray_1</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/blue_2</item>
         <item name="colorSecondaryVariant">@color/gray_2</item>
