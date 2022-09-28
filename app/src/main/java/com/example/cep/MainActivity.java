@@ -3,6 +3,8 @@ package com.example.cep;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,11 +17,6 @@ import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,17 +25,15 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int statusCode = 500;
-    private final String METHOD = "GET";
+    String TAG = "Evandro";
 
     ListView listView;
     EditText txtCep, txtState, txtCity, txtStreet;
     TextView tvStreet, tvState, tvNeighborhood, tvDdd, tvCity, tvBackground2;
     TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
     Button btnClear1, btnClear2, btnAddress, btnCep;
-    String textCep = "", textState = "", textCity = "", textStreet = "";
-    List<Address> listAddress;
     APIInterface apiInterface;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,83 +44,82 @@ public class MainActivity extends AppCompatActivity {
         initComponents();
         txtCep.requestFocus();
         setVisibility(false);
+        context = this;
 
         SimpleMaskFormatter smf = new SimpleMaskFormatter("NNNNN-NNN");
         MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
         txtCep.addTextChangedListener(mtw1);
 
-        btnAddress.setOnClickListener(v -> {
-            Call<Address> call = apiInterface.getAddress(txtCep.getText().toString());
-            call.enqueue(new Callback<Address>() {
-                @Override
-                public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
-                    if (response.body() == null) return;
-
-                    tvStreet.setText(response.body().getLogradouro());
-                    tvState.setText(response.body().getUf());
-                    tvNeighborhood.setText(response.body().getBairro());
-                    tvDdd.setText(response.body().getDdd());
-                    tvCity.setText(response.body().getLocalidade());
-
-                    setVisibility(true);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Address> call, @NonNull Throwable t) {
-                    Log.e("Evandro", "Error.");
-                }
-            });
-        });
-
-        btnCep.setOnClickListener(v -> {
-            textState = txtState.getText().toString();
-            textCity = txtCity.getText().toString();
-            textStreet = txtStreet.getText().toString();
-            listAddress = new ArrayList<>();
-
-            listAddress = searchCep(textState, textCity, textStreet);
-
-            if (listAddress.size() > 0) {
-                listView.setAdapter(null);
-                listView.invalidateViews();
-                AddressAdapter adapter = new AddressAdapter(this, listAddress);
-                listView.setAdapter(adapter);
-                InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
-            } else {
-                Toast.makeText(this, "Nenhum endereço encontrado.", Toast.LENGTH_LONG).show();
-            }
-        });
+        btnAddress.setOnClickListener(v -> searchAddress(txtCep.getText().toString()));
+        btnCep.setOnClickListener(v -> searchCep(txtState.getText().toString(), txtCity.getText().toString(), txtStreet.getText().toString()));
 
         btnClear1.setOnClickListener(v -> clear1());
         btnClear2.setOnClickListener(v -> clear2());
     }
 
-    private List<Address> searchCep(String state, String city, String street) {
+    private void searchAddress(String cep) {
+        Call<Address> call = apiInterface.getAddress(cep.replace("-", ""));
+        call.enqueue(new Callback<Address>() {
+            @Override
+            public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
+                if (!response.isSuccessful()) {
+                    notification(getString(R.string.addres_not_found));
+                    return;
+                }
 
-        String API = "https://viacep.com.br/ws/" + state + "/" + city + "/" + street + "/json/";
+                if (response.body() == null) return;
 
-        String response = HttpUtil.getConnect(METHOD, API);
-        List<Address> addressList = new ArrayList<>();
-        if(response != null) {
-            Address[] addresses = new Gson().fromJson(response, Address[].class);
-            addressList = Arrays.asList(addresses);
-        }
+                tvStreet.setText(response.body().getLogradouro());
+                tvState.setText(response.body().getUf());
+                tvNeighborhood.setText(response.body().getBairro());
+                tvDdd.setText(response.body().getDdd());
+                tvCity.setText(response.body().getLocalidade());
 
-        return addressList;
+                setVisibility(true);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Address> call, @NonNull Throwable t) {
+                notification(getString(R.string.addres_not_found));
+            }
+        });
     }
 
-    private Address searchAddress(String c) {
+    private void searchCep(String state, String city, String street) {
+        Call<List<Address>> call = apiInterface.getAddresses(state, city, street);
+        call.enqueue(new Callback<List<Address>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Address>> call, @NonNull Response<List<Address>> response) {
+                if (!response.isSuccessful()) {
+                    notification(getString(R.string.addres_not_found));
+                    return;
+                }
 
-        String API = "https://viacep.com.br/ws/" + c + "/json/";
+                if (response.body() == null) return;
+                List<Address> list = response.body();
 
-        String response = HttpUtil.getConnect(METHOD, API);
-        Address address = new Address();
-        if (response != null)
-            address = new Gson().fromJson(response, Address.class);
-        address.setStatus(statusCode);
+                if (list.size() > 0) {
+                    listView.setAdapter(null);
+                    listView.invalidateViews();
+                    AddressAdapter adapter = new AddressAdapter((Activity) context, list);
+                    listView.setAdapter(adapter);
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
+                } else {
+                    notification(getString(R.string.addres_not_found));
+                }
+            }
 
-        return address;
+            @Override
+            public void onFailure(@NonNull Call<List<Address>> call, @NonNull Throwable t) {
+                notification(getString(R.string.addres_not_found));
+            }
+        });
+    }
+
+    private void notification(String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+        Log.e(TAG, msg);
     }
 
     private void clear1() {

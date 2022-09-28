@@ -11,4 +11,5 @@
     <string name="street">Rua:</string>
     <string name="clear">Limpar</string>
     <string name="cep">CEP:</string>
+    <string name="addres_not_found">Nenhum endereço encontrado.</string>
 </resources>
