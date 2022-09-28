@@ -1,8 +1,10 @@
 package com.example.cep;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -15,13 +17,14 @@ import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,12 +38,16 @@ public class MainActivity extends AppCompatActivity {
     Button btnClear1, btnClear2, btnAddress, btnCep;
     String textCep = "", textState = "", textCity = "", textStreet = "";
     List<Address> listAddress;
+    APIInterface apiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i("Evandro", "ok");
+
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         initComponents();
         txtCep.requestFocus();
         setVisibility(false);
@@ -52,15 +59,30 @@ public class MainActivity extends AppCompatActivity {
         btnAddress.setOnClickListener(v -> {
             textCep = txtCep.getText().toString();
 
-            Address address = searchAddress(textCep);
+            Call<Address> call = apiInterface.getAddress("94130400");
+            call.enqueue(new Callback<Address>() {
+                @Override
+                public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
+                    if (response.body() != null) {
+                        Log.i("Evandro", response.body().getLocalidade());
+                    }
+                }
 
-            tvStreet.setText(address.getLogradouro());
-            tvState.setText(address.getUf());
-            tvNeighborhood.setText(address.getBairro());
-            tvDdd.setText(address.getDdd());
-            tvCity.setText(address.getLocalidade());
+                @Override
+                public void onFailure(@NonNull Call<Address> call, @NonNull Throwable t) {
+                    Log.e("Evandro", "Error.");
+                }
+            });
 
-            setVisibility(true);
+//            Address address = searchAddress(textCep);
+//
+//            tvStreet.setText(address.getLogradouro());
+//            tvState.setText(address.getUf());
+//            tvNeighborhood.setText(address.getBairro());
+//            tvDdd.setText(address.getDdd());
+//            tvCity.setText(address.getLocalidade());
+//
+//            setVisibility(true);
         });
 
         btnCep.setOnClickListener(v -> {
@@ -83,47 +105,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnClear1.setOnClickListener(v -> {
-            txtCep.setText("");
-            tvStreet.setText("");
-            tvState.setText("");
-            tvNeighborhood.setText("");
-            tvDdd.setText("");
-            tvCity.setText("");
-            setVisibility(false);
-        });
-
-        btnClear2.setOnClickListener(v -> {
-            txtState.setText("");
-            txtCity.setText("");
-            txtStreet.setText("");
-            listView.setAdapter(null);
-            listView.invalidateViews();
-            txtState.requestFocus();
-        });
-    }
-
-    private void initComponents() {
-        txtCep = findViewById(R.id.txtCep);
-        txtState = findViewById(R.id.txtState);
-        txtCity = findViewById(R.id.txtCity);
-        txtStreet = findViewById(R.id.txtStreet);
-        tvStreet = findViewById(R.id.tvStreet);
-        tvState = findViewById(R.id.tvState);
-        tvNeighborhood = findViewById(R.id.tvNeighborhood);
-        tvDdd = findViewById(R.id.tvDdd);
-        tvCity = findViewById(R.id.tvCity);
-        lblStreet = findViewById(R.id.lblStreet);
-        lblState = findViewById(R.id.lblState);
-        lblNeighborhood = findViewById(R.id.lblNeighborhood);
-        lblDdd = findViewById(R.id.lblDdd);
-        lblCity = findViewById(R.id.lblCity);
-        tvBackground2 = findViewById(R.id.tvBackground2);
-        listView = findViewById(R.id.listView);
-        btnAddress = findViewById(R.id.btnAddress);
-        btnCep = findViewById(R.id.btnCep);
-        btnClear1 = findViewById(R.id.btnClear1);
-        btnClear2 = findViewById(R.id.btnClear2);
+        btnClear1.setOnClickListener(v -> clear1());
+        btnClear2.setOnClickListener(v -> clear2());
     }
 
     private List<Address> searchCep(String state, String city, String street) {
@@ -151,6 +134,48 @@ public class MainActivity extends AppCompatActivity {
         address.setStatus(statusCode);
 
         return address;
+    }
+
+    private void clear1() {
+        txtCep.setText("");
+        tvStreet.setText("");
+        tvState.setText("");
+        tvNeighborhood.setText("");
+        tvDdd.setText("");
+        tvCity.setText("");
+        setVisibility(false);
+    }
+
+    private void clear2() {
+        txtState.setText("");
+        txtCity.setText("");
+        txtStreet.setText("");
+        listView.setAdapter(null);
+        listView.invalidateViews();
+        txtState.requestFocus();
+    }
+
+    private void initComponents() {
+        txtCep = findViewById(R.id.txtCep);
+        txtState = findViewById(R.id.txtState);
+        txtCity = findViewById(R.id.txtCity);
+        txtStreet = findViewById(R.id.txtStreet);
+        tvStreet = findViewById(R.id.tvStreet);
+        tvState = findViewById(R.id.tvState);
+        tvNeighborhood = findViewById(R.id.tvNeighborhood);
+        tvDdd = findViewById(R.id.tvDdd);
+        tvCity = findViewById(R.id.tvCity);
+        lblStreet = findViewById(R.id.lblStreet);
+        lblState = findViewById(R.id.lblState);
+        lblNeighborhood = findViewById(R.id.lblNeighborhood);
+        lblDdd = findViewById(R.id.lblDdd);
+        lblCity = findViewById(R.id.lblCity);
+        tvBackground2 = findViewById(R.id.tvBackground2);
+        listView = findViewById(R.id.listView);
+        btnAddress = findViewById(R.id.btnAddress);
+        btnCep = findViewById(R.id.btnCep);
+        btnClear1 = findViewById(R.id.btnClear1);
+        btnClear2 = findViewById(R.id.btnClear2);
     }
 
     private void setVisibility(boolean visibility) {
