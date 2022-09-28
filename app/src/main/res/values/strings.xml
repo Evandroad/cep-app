@@ -12,4 +12,8 @@
     <string name="clear">Limpar</string>
     <string name="cep">CEP:</string>
     <string name="addres_not_found">Nenhum endereço encontrado.</string>
+    <string name="type_cep">Digite o CEP</string>
+    <string name="type_state">Digite a sigla do estado</string>
+    <string name="type_city">Digite no mínimo 3 letras</string>
+    <string name="type_street">Digite no mínimo 3 letras</string>
 </resources>
