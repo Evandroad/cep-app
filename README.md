@@ -7,7 +7,10 @@
 
 :arrow_down: <a href="https://github.com/evandroad/cep-app/raw/main/assets/cep-app_v1.1.apk" download>Click to Download the app</a>
 
-<img src="assets/video.gif" alt="demo" width="210px" style="display: block; margin: 20px auto;">
+:camera: Scan to download the app
+![](assets/qrcode.png)
+
+<img src="assets/video.ggif" alt="demo" width="210px" style="display: block; margin: 20px auto;">
 
 To clone the project with SSH:
 
