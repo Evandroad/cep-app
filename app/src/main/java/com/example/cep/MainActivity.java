@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i("Evandro", "ok");
-
         apiInterface = APIClient.getClient().create(APIInterface.class);
         initComponents();
         txtCep.requestFocus();
@@ -57,15 +55,19 @@ public class MainActivity extends AppCompatActivity {
         txtCep.addTextChangedListener(mtw1);
 
         btnAddress.setOnClickListener(v -> {
-            textCep = txtCep.getText().toString();
-
-            Call<Address> call = apiInterface.getAddress("94130400");
+            Call<Address> call = apiInterface.getAddress(txtCep.getText().toString());
             call.enqueue(new Callback<Address>() {
                 @Override
                 public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
-                    if (response.body() != null) {
-                        Log.i("Evandro", response.body().getLocalidade());
-                    }
+                    if (response.body() == null) return;
+
+                    tvStreet.setText(response.body().getLogradouro());
+                    tvState.setText(response.body().getUf());
+                    tvNeighborhood.setText(response.body().getBairro());
+                    tvDdd.setText(response.body().getDdd());
+                    tvCity.setText(response.body().getLocalidade());
+
+                    setVisibility(true);
                 }
 
                 @Override
@@ -73,16 +75,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("Evandro", "Error.");
                 }
             });
-
-//            Address address = searchAddress(textCep);
-//
-//            tvStreet.setText(address.getLogradouro());
-//            tvState.setText(address.getUf());
-//            tvNeighborhood.setText(address.getBairro());
-//            tvDdd.setText(address.getDdd());
-//            tvCity.setText(address.getLocalidade());
-//
-//            setVisibility(true);
         });
 
         btnCep.setOnClickListener(v -> {
