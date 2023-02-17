@@ -3,6 +3,7 @@ package com.example.cep;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,11 +16,8 @@ import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
-import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,25 +26,22 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int statusCode = 500;
-    private final String METHOD = "GET";
-
     ListView listView;
     EditText txtCep, txtState, txtCity, txtStreet;
     TextView tvStreet, tvState, tvNeighborhood, tvDdd, tvCity, tvBackground2;
     TextView lblStreet, lblState, lblNeighborhood, lblDdd, lblCity;
     Button btnClear1, btnClear2, btnAddress, btnCep;
-    String textCep = "", textState = "", textCity = "", textStreet = "";
-    List<Address> listAddress;
     APIInterface apiInterface;
+    Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        apiInterface = APIClient.getClient().create(APIInterface.class);
+        activity = this;
         initComponents();
+        apiInterface = APIClient.getClient().create(APIInterface.class);
         txtCep.requestFocus();
         setVisibility(false);
 
@@ -54,78 +49,62 @@ public class MainActivity extends AppCompatActivity {
         MaskTextWatcher mtw1 = new MaskTextWatcher(txtCep, smf);
         txtCep.addTextChangedListener(mtw1);
 
-        btnAddress.setOnClickListener(v -> {
-            Call<Address> call = apiInterface.getAddress(txtCep.getText().toString());
-            call.enqueue(new Callback<Address>() {
-                @Override
-                public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
-                    if (response.body() == null) return;
-
-                    tvStreet.setText(response.body().getLogradouro());
-                    tvState.setText(response.body().getUf());
-                    tvNeighborhood.setText(response.body().getBairro());
-                    tvDdd.setText(response.body().getDdd());
-                    tvCity.setText(response.body().getLocalidade());
-
-                    setVisibility(true);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Address> call, @NonNull Throwable t) {
-                    Log.e("Evandro", "Error.");
-                }
-            });
-        });
-
-        btnCep.setOnClickListener(v -> {
-            textState = txtState.getText().toString();
-            textCity = txtCity.getText().toString();
-            textStreet = txtStreet.getText().toString();
-            listAddress = new ArrayList<>();
-
-            listAddress = searchCep(textState, textCity, textStreet);
-
-            if (listAddress.size() > 0) {
-                listView.setAdapter(null);
-                listView.invalidateViews();
-                AddressAdapter adapter = new AddressAdapter(this, listAddress);
-                listView.setAdapter(adapter);
-                InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
-            } else {
-                Toast.makeText(this, "Nenhum endereço encontrado.", Toast.LENGTH_LONG).show();
-            }
-        });
-
+        btnAddress.setOnClickListener(v -> searchAddress());
         btnClear1.setOnClickListener(v -> clear1());
+        btnCep.setOnClickListener(v -> searchCep());
         btnClear2.setOnClickListener(v -> clear2());
     }
 
-    private List<Address> searchCep(String state, String city, String street) {
+    private void searchAddress() {
+        Call<Address> call = apiInterface.getAddress(txtCep.getText().toString());
+        call.enqueue(new Callback<Address>() {
+            @Override
+            public void onResponse(@NonNull Call<Address> call, @NonNull Response<Address> response) {
+                if (response.body() == null) return;
 
-        String API = "https://viacep.com.br/ws/" + state + "/" + city + "/" + street + "/json/";
+                tvStreet.setText(response.body().getLogradouro());
+                tvState.setText(response.body().getUf());
+                tvNeighborhood.setText(response.body().getBairro());
+                tvDdd.setText(response.body().getDdd());
+                tvCity.setText(response.body().getLocalidade());
 
-        String response = HttpUtil.getConnect(METHOD, API);
-        List<Address> addressList = new ArrayList<>();
-        if(response != null) {
-            Address[] addresses = new Gson().fromJson(response, Address[].class);
-            addressList = Arrays.asList(addresses);
-        }
+                setVisibility(true);
+            }
 
-        return addressList;
+            @Override
+            public void onFailure(@NonNull Call<Address> call, @NonNull Throwable t) { Log.e("Evandro", "Error."); }
+        });
     }
 
-    private Address searchAddress(String c) {
+    private void searchCep() {
+        String state = txtState.getText().toString();
+        String city = txtCity.getText().toString();
+        String street = txtStreet.getText().toString();
 
-        String API = "https://viacep.com.br/ws/" + c + "/json/";
+        Call<List<Address>> call = apiInterface.getAddresses(state, city, street);
+        call.enqueue(new Callback<List<Address>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Address>> call, @NonNull Response<List<Address>> response) {
+                if (response.body() == null) return;
 
-        String response = HttpUtil.getConnect(METHOD, API);
-        Address address = new Address();
-        if (response != null)
-            address = new Gson().fromJson(response, Address.class);
-        address.setStatus(statusCode);
+                List<Address> _listAddress = new ArrayList<>(response.body());
 
-        return address;
+                if (response.body().size() <= 0) {
+                    Toast.makeText(getApplicationContext(), "Nenhum endereço encontrado.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                listView.setAdapter(null);
+                listView.invalidateViews();
+                AddressAdapter adapter = new AddressAdapter(activity, _listAddress);
+                listView.setAdapter(adapter);
+                InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(txtStreet.getWindowToken(), 0);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Address>> call, @NonNull Throwable t) { Log.e("Evandro", "Error"); }
+        });
     }
 
     private void clear1() {
@@ -171,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setVisibility(boolean visibility) {
-        tvStreet.setVisibility(visibility ? View.VISIBLE : View.GONE);
         tvStreet.setVisibility(visibility ? View.VISIBLE : View.GONE);
         tvState.setVisibility(visibility ? View.VISIBLE : View.GONE);
         tvNeighborhood.setVisibility(visibility ? View.VISIBLE : View.GONE);

@@ -46,16 +46,5 @@ public class Address {
 
     public String getSiafi() { return siafi; }
     public void setSiafi(String siafi) { this.siafi = siafi; }
-
-    @Override
-    public String toString() {
-        return "CEP: " + cep +
-               ", logradouro: " + logradouro +
-               ", complemento: " + complemento +
-               ", bairro: " + bairro +
-               ", localidade: " + localidade +
-               ", uf: " + uf +
-               ", ddd: " + ddd;
-    }
     
 }
