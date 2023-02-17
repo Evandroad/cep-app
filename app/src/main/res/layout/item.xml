@@ -74,6 +74,7 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/city"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
         app:layout_constraintEnd_toStartOf="@+id/tvItemCity"
